@@ -30,7 +30,11 @@ export default function App() {
   });
 
   // Register VoIP Push and link token to current user ID
-  const { token: pushToken, registered: isPushRegistered } = usePushToken(currentUserId);
+  const {
+    token: pushToken,
+    registered: isPushRegistered,
+    sendTokenToServer,
+  } = usePushToken(currentUserId);
 
   // Initialize CallManager listeners and socket connection
   useEffect(() => {
@@ -113,7 +117,9 @@ export default function App() {
             setCurrentUserId(newId);
             socketService.disconnect();
             socketService.connect(newId);
+            sendTokenToServer(newId);
           }}
+          onSyncToken={() => sendTokenToServer(currentUserId)}
           onStartCall={handleStartCall}
           onOpenHistory={() => setCurrentScreen('history')}
           isPushRegistered={isPushRegistered}

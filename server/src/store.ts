@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 export interface UserDevice {
   userId: string;
   token: string;
@@ -16,12 +19,50 @@ export interface CallRecord {
   timeoutTimer?: NodeJS.Timeout;
 }
 
-class InMemoryStore {
+const TOKENS_FILE = path.resolve(process.cwd(), 'tokens.json');
+
+class PersistentStore {
   // Map<userId, UserDevice>
   private devices = new Map<string, UserDevice>();
 
   // Map<serverCallId, CallRecord>
   private calls = new Map<string, CallRecord>();
+
+  constructor() {
+    this.loadFromDisk();
+  }
+
+  private loadFromDisk() {
+    try {
+      if (fs.existsSync(TOKENS_FILE)) {
+        const raw = fs.readFileSync(TOKENS_FILE, 'utf8');
+        const data = JSON.parse(raw);
+        for (const [userId, item] of Object.entries(data as Record<string, any>)) {
+          this.devices.set(userId, {
+            userId: item.userId,
+            token: item.token,
+            tokenType: item.tokenType,
+            lastSeen: new Date(item.lastSeen || Date.now()),
+          });
+        }
+        console.log(`[Store] Loaded ${this.devices.size} saved device token(s) from disk.`);
+      }
+    } catch (e) {
+      console.warn('[Store] Could not load tokens from disk:', e);
+    }
+  }
+
+  private saveToDisk() {
+    try {
+      const obj: Record<string, any> = {};
+      for (const [userId, device] of this.devices.entries()) {
+        obj[userId] = device;
+      }
+      fs.writeFileSync(TOKENS_FILE, JSON.stringify(obj, null, 2), 'utf8');
+    } catch (e) {
+      console.warn('[Store] Could not save tokens to disk:', e);
+    }
+  }
 
   // ── Device Token Operations ──
   registerDevice(userId: string, token: string, tokenType: 'FCM' | 'APNS_VOIP') {
@@ -31,6 +72,7 @@ class InMemoryStore {
       tokenType,
       lastSeen: new Date(),
     });
+    this.saveToDisk();
     console.log(`[Store] Registered device for ${userId} (type: ${tokenType})`);
   }
 
@@ -84,4 +126,4 @@ class InMemoryStore {
   }
 }
 
-export const store = new InMemoryStore();
+export const store = new PersistentStore();

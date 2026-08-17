@@ -7,6 +7,7 @@ dist/
 # Environment configuration and secrets
 .env
 service-account.json
+tokens.json
 *.pem
 *.p8
 *.key

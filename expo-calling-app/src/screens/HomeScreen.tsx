@@ -21,6 +21,7 @@ import { SERVER_URL } from '../utils/constants';
 interface HomeScreenProps {
   currentUserId: string;
   onChangeUser: (userId: string) => void;
+  onSyncToken?: () => void;
   onStartCall: (targetUserId: string, targetName: string) => void;
   onOpenHistory: () => void;
   isPushRegistered: boolean;
@@ -42,6 +43,7 @@ const DEFAULT_USERS: ContactUser[] = [
 export function HomeScreen({
   currentUserId,
   onChangeUser,
+  onSyncToken,
   onStartCall,
   onOpenHistory,
   isPushRegistered,
@@ -97,6 +99,9 @@ export function HomeScreen({
     api.setBaseUrl(tempUrl);
     socketService.setServerUrl(tempUrl);
     socketService.connect(currentUserId);
+    if (onSyncToken) {
+      onSyncToken();
+    }
     setShowConfigModal(false);
     Alert.alert('Server Updated', `New endpoint: ${tempUrl}`);
   };

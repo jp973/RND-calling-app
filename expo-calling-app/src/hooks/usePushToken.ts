@@ -1,7 +1,7 @@
 /**
  * usePushToken — Registers for VoIP push and sends token to backend
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   registerVoIPPush,
   useVoIPPushToken,
@@ -19,29 +19,35 @@ export function usePushToken(userId: string | null) {
     console.log('[PushToken] Registered for VoIP push');
   }, []);
 
-  // When token arrives, send to backend
-  useEffect(() => {
-    if (!voip || !userId) return;
+  const sendTokenToServer = useCallback(async (targetUserId?: string) => {
+    const uid = targetUserId || userId;
+    if (!voip?.token || !uid) return;
 
-    console.log(`[PushToken] Got ${voip.type} token:`, voip.token.substring(0, 20) + '...');
-
-    api
-      .registerToken(userId, voip.token, voip.type)
-      .then(() => {
-        console.log('[PushToken] Token registered with server');
-        setRegistered(true);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error('[PushToken] Failed to register token:', err);
-        setError(err.message);
-      });
+    try {
+      console.log(`[PushToken] Sending ${voip.type} token for user ${uid} to ${api['baseUrl']}...`);
+      await api.registerToken(uid, voip.token, voip.type);
+      console.log(`[PushToken] ✅ Token successfully registered for ${uid}`);
+      setRegistered(true);
+      setError(null);
+    } catch (err: any) {
+      console.warn(`[PushToken] ⚠️ Failed to register token for ${uid}:`, err?.message);
+      setError(err?.message || 'Failed to register');
+      setRegistered(false);
+    }
   }, [voip, userId]);
+
+  // When token or userId changes, automatically sync to server
+  useEffect(() => {
+    if (voip?.token && userId) {
+      sendTokenToServer(userId);
+    }
+  }, [voip?.token, userId, sendTokenToServer]);
 
   return {
     token: voip?.token || null,
     tokenType: voip?.type || null,
     registered,
     error,
+    sendTokenToServer,
   };
 }

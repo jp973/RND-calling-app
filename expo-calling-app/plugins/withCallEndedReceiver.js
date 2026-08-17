@@ -61,6 +61,9 @@ function withCallEndedReceiverManifest(config) {
 
     if (!application) return config;
 
+    // Enable cleartext HTTP traffic so the app can talk to local IP endpoints (e.g. http://192.168.0.171:3001)
+    application.$['android:usesCleartextTraffic'] = 'true';
+
     // Check if receiver already exists
     const receivers = application.receiver || [];
     const existing = receivers.find(

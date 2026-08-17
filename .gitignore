@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment files and credentials
+.env
+.env*.local
+service-account.json
+google-services.json
+GoogleService-Info.plist
+*.pem
+*.p8
+*.key
+
+# Native builds and temporary files
+expo-calling-app/android/
+expo-calling-app/ios/
+expo-calling-app/.expo/
+server/dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# OS metadata
+.DS_Store
+Thumbs.db

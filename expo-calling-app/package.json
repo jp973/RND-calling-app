@@ -1,0 +1,29 @@
+{
+  "name": "expo-calling-app",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@expo-google-fonts/inter": "^0.4.2",
+    "@livekit/react-native-webrtc": "^144.1.2",
+    "expo": "~57.0.13",
+    "expo-callkit-telecom": "^0.4.0",
+    "expo-font": "^57.0.1",
+    "expo-linear-gradient": "^57.0.1",
+    "expo-notifications": "^57.0.11",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.2",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "private": true
+}

@@ -66,11 +66,10 @@ export function UserCard({
               {
                 backgroundColor: online
                   ? theme.colors.online
-                  : theme.colors.offline,
+                  : '#94A3B8',
               },
             ]}
           />
-          {online && <View style={styles.statusGlow} />}
         </View>
 
         {/* Info */}
@@ -107,12 +106,16 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.bgCard,
+    backgroundColor: '#FFFFFF',
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.md,
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    ...theme.shadows.card,
+    borderColor: '#E2E8F0',
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   avatarContainer: {
     position: 'relative',
@@ -121,16 +124,16 @@ const styles = StyleSheet.create({
     width: theme.layout.avatarSizeMedium,
     height: theme.layout.avatarSizeMedium,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.bgSurface,
+    backgroundColor: '#EEF2FF',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
+    borderWidth: 1.5,
+    borderColor: '#C7D2FE',
   },
   initials: {
     fontFamily: theme.fonts.bold,
     fontSize: theme.fontSize.lg,
-    color: theme.colors.primary,
+    color: '#4F46E5',
   },
   statusDot: {
     position: 'absolute',
@@ -140,16 +143,7 @@ const styles = StyleSheet.create({
     height: 14,
     borderRadius: 7,
     borderWidth: 2,
-    borderColor: theme.colors.bgCard,
-  },
-  statusGlow: {
-    position: 'absolute',
-    bottom: -1,
-    right: -1,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: theme.colors.onlineGlow,
+    borderColor: '#FFFFFF',
   },
   info: {
     flex: 1,
@@ -158,26 +152,30 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: theme.fonts.semiBold,
     fontSize: theme.fontSize.lg,
-    color: theme.colors.textPrimary,
+    color: '#0F172A',
   },
   status: {
     fontFamily: theme.fonts.regular,
     fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
+    color: '#64748B',
     marginTop: theme.spacing.xxs,
   },
   callButton: {
     width: theme.layout.avatarSizeSmall + 8,
     height: theme.layout.avatarSizeSmall + 8,
     borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.answerGreen,
+    backgroundColor: '#10B981',
     justifyContent: 'center',
     alignItems: 'center',
-    ...theme.shadows.buttonGreen,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 4,
   },
   callButtonDisabled: {
-    backgroundColor: theme.colors.offline,
-    opacity: 0.5,
+    backgroundColor: '#CBD5E1',
+    opacity: 0.7,
     shadowOpacity: 0,
     elevation: 0,
   },

@@ -52,7 +52,8 @@ export function createCallRouter(io: SocketIOServer): Router {
         calleeDevice.token,
         serverCallId,
         callerId,
-        callerName
+        callerName,
+        process.env.SERVER_PUBLIC_URL || 'http://192.168.0.171:3001'
       );
 
       // Set 45-second server-side timeout

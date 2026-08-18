@@ -29,6 +29,18 @@ export function useWebRTC({ roomId, isCaller, enabled }: UseWebRTCOptions) {
   const pendingCandidates = useRef<any[]>([]);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [connectionState, setConnectionState] = useState<string>('new');
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+
+  // ─── Set Mute / Unmute Local Microphone ────────────────
+  const setMuted = useCallback((muted: boolean) => {
+    setIsMuted(muted);
+    if (localStream.current) {
+      localStream.current.getAudioTracks().forEach((track: any) => {
+        track.enabled = !muted;
+        console.log(`[WebRTC] 🎤 Microphone track ${track.id} set enabled = ${!muted}`);
+      });
+    }
+  }, []);
 
   // ─── Process Buffered ICE Candidates ───────────────────
   const processPendingCandidates = useCallback(async (pc: RTCPeerConnection) => {
@@ -117,11 +129,15 @@ export function useWebRTC({ roomId, isCaller, enabled }: UseWebRTCOptions) {
     const pc = createPeerConnection();
     const stream = await getLocalStream();
 
-    // Add local tracks to peer connection
+    // Add local tracks to peer connection with current mute state
     stream.getTracks().forEach((track: any) => {
-      track.enabled = true;
+      if (track.kind === 'audio') {
+        track.enabled = !isMuted;
+      } else {
+        track.enabled = true;
+      }
       pc.addTrack(track, stream);
-      console.log('[WebRTC] Added local track to peer connection:', track.kind);
+      console.log('[WebRTC] Added local track to peer connection:', track.kind, 'enabled:', track.enabled);
     });
 
     const socket = socketService.getSocket();
@@ -202,7 +218,7 @@ export function useWebRTC({ roomId, isCaller, enabled }: UseWebRTCOptions) {
       cleanup();
       callManager.handleRemoteHangup();
     });
-  }, [roomId, isCaller, createPeerConnection, getLocalStream, processPendingCandidates]);
+  }, [roomId, isCaller, isMuted, createPeerConnection, getLocalStream, processPendingCandidates]);
 
   // ─── Cleanup ───────────────────────────────────────────
   const cleanup = useCallback(() => {
@@ -260,5 +276,7 @@ export function useWebRTC({ roomId, isCaller, enabled }: UseWebRTCOptions) {
     connectionState,
     cleanup,
     startConnection,
+    setMuted,
+    isMuted,
   };
 }

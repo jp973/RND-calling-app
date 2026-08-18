@@ -31,11 +31,16 @@ export function InCallScreen({
   const isConnected = activeCall.state === 'connected';
 
   // Wire up peer-to-peer WebRTC audio when call is connecting or connected
-  const { connectionState } = useWebRTC({
+  const { connectionState, setMuted } = useWebRTC({
     roomId: activeCall.serverCallId,
     isCaller,
     enabled: activeCall.state === 'connecting' || activeCall.state === 'connected',
   });
+
+  const handleMuteToggle = (muted: boolean) => {
+    setMuted(muted);
+    onToggleMute(muted);
+  }; 
 
   const getStatusLabel = () => {
     switch (activeCall.state) {
@@ -138,7 +143,7 @@ export function InCallScreen({
         ) : (
           /* Connected or Outgoing: Mute, Speaker, Hangup controls */
           <AudioControls
-            onMuteToggle={onToggleMute}
+            onMuteToggle={handleMuteToggle}
             onSpeakerToggle={onToggleSpeaker}
             onHangup={onHangup}
           />

@@ -90,9 +90,14 @@ export default function App() {
     );
   }
 
+  const isLightScreen = !isInCall;
+
   return (
-    <View style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.bgDark} />
+    <View style={[styles.root, isLightScreen && { backgroundColor: '#F8FAFC' }]}>
+      <StatusBar
+        barStyle={isLightScreen ? 'dark-content' : 'light-content'}
+        backgroundColor={isLightScreen ? '#F8FAFC' : theme.colors.bgDark}
+      />
 
       {/* If there is an active call in ringing/connecting/connected state, show InCallScreen */}
       {isInCall && activeCall ? (
@@ -111,6 +116,7 @@ export default function App() {
             setCurrentScreen('home');
             handleStartCall(id, name);
           }}
+          onClearLogs={() => setCallLogs([])}
         />
       ) : (
         <HomeScreen

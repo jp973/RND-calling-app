@@ -85,7 +85,7 @@ function withCallEndedReceiverManifest(config) {
             action: [
               {
                 $: {
-                  'android:name': `${androidPackage}.CALL_EVENT`,
+                  'android:name': 'expo.modules.callkittelecom.ACTION_CALL_EVENT',
                 },
               },
             ],

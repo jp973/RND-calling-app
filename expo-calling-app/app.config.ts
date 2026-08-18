@@ -28,6 +28,7 @@ const config: ExpoConfig = {
   },
 
   plugins: [
+    'expo-audio',
     // ─── expo-callkit-telecom (native call UI + FCM parsing) ───
     [
       'expo-callkit-telecom',

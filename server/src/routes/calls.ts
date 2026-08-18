@@ -92,8 +92,11 @@ export function createCallRouter(io: SocketIOServer): Router {
     console.log(`[API] Call ${serverCallId} declined (reason: ${reason || 'normal'})`);
     const call = store.updateCallStatus(serverCallId, 'declined');
     if (call) {
-      // Notify caller immediately so their phone stops ringing
+      if (call.timeoutTimer) {
+        clearTimeout(call.timeoutTimer);
+      }
       io.to(`user:${call.callerId}`).emit('call-declined', { serverCallId, reason });
+      io.to(`user:${call.calleeId}`).emit('call-declined', { serverCallId, reason });
       io.to(serverCallId).emit('call-declined', { serverCallId, reason });
     }
     return res.json({ success: true, status: 'declined' });
@@ -104,7 +107,12 @@ export function createCallRouter(io: SocketIOServer): Router {
     const { serverCallId } = req.body;
     const call = store.updateCallStatus(serverCallId, 'ended');
     if (call) {
+      if (call.timeoutTimer) {
+        clearTimeout(call.timeoutTimer);
+      }
       io.to(serverCallId).emit('hangup', { serverCallId });
+      io.to(`user:${call.callerId}`).emit('hangup', { serverCallId });
+      io.to(`user:${call.calleeId}`).emit('hangup', { serverCallId });
     }
     return res.json({ success: true, status: 'ended' });
   });

@@ -35,6 +35,10 @@ export function useCallSession() {
     []
   );
 
+  const answerCall = useCallback(async () => {
+    await callManager.answerCall();
+  }, []);
+
   return {
     activeCall,
     isInCall: activeCall !== null && activeCall.state !== 'ended',
@@ -42,6 +46,7 @@ export function useCallSession() {
       activeCall?.state === 'ringing_incoming' ||
       activeCall?.state === 'ringing_outgoing',
     isConnected: activeCall?.state === 'connected',
+    answerCall,
     hangup,
     toggleMute,
     toggleSpeaker,

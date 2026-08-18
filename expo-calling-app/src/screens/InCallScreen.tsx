@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme';
 import { ActiveCall } from '../services/callManager';
@@ -10,6 +10,7 @@ import { useWebRTC } from '../hooks/useWebRTC';
 
 interface InCallScreenProps {
   activeCall: ActiveCall;
+  onAnswer?: () => void;
   onHangup: () => void;
   onToggleMute: (muted: boolean) => void;
   onToggleSpeaker: (speaker: boolean) => void;
@@ -17,6 +18,7 @@ interface InCallScreenProps {
 
 export function InCallScreen({
   activeCall,
+  onAnswer,
   onHangup,
   onToggleMute,
   onToggleSpeaker,
@@ -25,6 +27,7 @@ export function InCallScreen({
   const isRinging =
     activeCall.state === 'ringing_incoming' ||
     activeCall.state === 'ringing_outgoing';
+  const isIncomingRinging = activeCall.state === 'ringing_incoming';
   const isConnected = activeCall.state === 'connected';
 
   // Wire up peer-to-peer WebRTC audio when call is connecting or connected
@@ -76,12 +79,17 @@ export function InCallScreen({
         <PulseAnimation
           active={isRinging}
           size={theme.layout.avatarSizeHero}
-          color={theme.colors.primaryGlow}
+          color={isIncomingRinging ? theme.colors.answerGreenGlow : theme.colors.primaryGlow}
         />
 
         {/* Large Avatar */}
         <View style={styles.avatarWrapper}>
-          <View style={styles.avatar}>
+          <View
+            style={[
+              styles.avatar,
+              isIncomingRinging && { borderColor: theme.colors.answerGreen },
+            ]}
+          >
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
         </View>
@@ -102,13 +110,39 @@ export function InCallScreen({
         </View>
       </View>
 
-      {/* Bottom Audio & Hangup Controls */}
+      {/* Bottom Controls */}
       <View style={styles.bottomControls}>
-        <AudioControls
-          onMuteToggle={onToggleMute}
-          onSpeakerToggle={onToggleSpeaker}
-          onHangup={onHangup}
-        />
+        {isIncomingRinging ? (
+          /* Incoming Call Ringing: Big Green Answer + Red Decline buttons */
+          <View style={styles.incomingActionRow}>
+            {/* Decline Button */}
+            <TouchableOpacity
+              style={styles.declineButton}
+              onPress={onHangup}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.actionIcon}>📵</Text>
+              <Text style={styles.actionLabel}>Decline</Text>
+            </TouchableOpacity>
+
+            {/* Answer Button */}
+            <TouchableOpacity
+              style={styles.answerButton}
+              onPress={onAnswer}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.actionIcon}>📞</Text>
+              <Text style={styles.actionLabel}>Answer</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          /* Connected or Outgoing: Mute, Speaker, Hangup controls */
+          <AudioControls
+            onMuteToggle={onToggleMute}
+            onSpeakerToggle={onToggleSpeaker}
+            onHangup={onHangup}
+          />
+        )}
       </View>
     </View>
   );
@@ -185,5 +219,38 @@ const styles = StyleSheet.create({
   },
   bottomControls: {
     paddingBottom: theme.spacing.xl,
+  },
+  incomingActionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.xl,
+  },
+  answerButton: {
+    width: theme.layout.actionButtonSizeLarge,
+    height: theme.layout.actionButtonSizeLarge,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.answerGreen,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...theme.shadows.buttonGreen,
+  },
+  declineButton: {
+    width: theme.layout.actionButtonSizeLarge,
+    height: theme.layout.actionButtonSizeLarge,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.declineRed,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...theme.shadows.buttonRed,
+  },
+  actionIcon: {
+    fontSize: 28,
+  },
+  actionLabel: {
+    fontFamily: theme.fonts.semiBold,
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.white,
+    marginTop: 2,
   },
 });

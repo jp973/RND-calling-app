@@ -50,6 +50,7 @@ export default function App() {
   const {
     activeCall,
     isInCall,
+    answerCall,
     hangup,
     toggleMute,
     toggleSpeaker,
@@ -97,6 +98,7 @@ export default function App() {
       {isInCall && activeCall ? (
         <InCallScreen
           activeCall={activeCall}
+          onAnswer={answerCall}
           onHangup={hangup}
           onToggleMute={toggleMute}
           onToggleSpeaker={toggleSpeaker}

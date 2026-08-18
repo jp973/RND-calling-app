@@ -72,6 +72,10 @@ npm install
 npx expo run:android
 ```
 
+cd "/Users/jayaprakash/Desktop/expo calling app/expo-calling-app/android"
+./gradlew assembleRelease
+
+
 *(This compiles the native Android dev build with Telecom integration and installs it directly on your phone).*
 
 ---
